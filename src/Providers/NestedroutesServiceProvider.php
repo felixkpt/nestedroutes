@@ -32,7 +32,7 @@ class NestedroutesServiceProvider extends ServiceProvider
         $router->aliasMiddleware('nestedroutes.auth', NestedroutesAuthMiddleware::class);
         $router->aliasMiddleware('nestedroutes.temporary_token', TemporaryTokenValidationMiddleware::class);
 
-        $this->configure();
+        $this->basicConfig();
 
         $folder = base_path(preg_replace('@/+@', '/', 'routes/nested-routes/'));
         File::ensureDirectoryExists($folder);
@@ -42,7 +42,7 @@ class NestedroutesServiceProvider extends ServiceProvider
         $this->loadRoutesFrom($driver);
     }
 
-    public function configure()
+    public function basicConfig()
     {
 
         $folder = base_path(preg_replace('@/+@', '/', 'routes/nested-routes/'));
