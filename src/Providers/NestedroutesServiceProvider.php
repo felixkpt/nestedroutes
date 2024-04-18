@@ -18,6 +18,7 @@ class NestedroutesServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->register(NestedroutesMacroServiceProvider::class);
     }
 
     /**
@@ -30,6 +31,19 @@ class NestedroutesServiceProvider extends ServiceProvider
         $router = $this->app->make(Router::class);
         $router->aliasMiddleware('nestedroutes.auth', NestedroutesAuthMiddleware::class);
         $router->aliasMiddleware('nestedroutes.temporary_token', TemporaryTokenValidationMiddleware::class);
+
+        $this->configure();
+
+        $folder = base_path(preg_replace('@/+@', '/', 'routes/nested-routes/'));
+        File::ensureDirectoryExists($folder);
+
+        $driver = preg_replace('@/+@', '/', $folder . '/driver.php');
+
+        $this->loadRoutesFrom($driver);
+    }
+
+    public function configure()
+    {
 
         $folder = base_path(preg_replace('@/+@', '/', 'routes/nested-routes/'));
         File::ensureDirectoryExists($folder);
@@ -60,6 +74,34 @@ class NestedroutesServiceProvider extends ServiceProvider
             chmod($auth_controller, 775);
         }
 
-        $this->loadRoutesFrom($driver);
+        $configPath = config_path('nestedroutes.php');
+
+        // Check if the config file already exists
+        if (!file_exists($configPath)) {
+            // If not, create it with default configuration
+            $this->createDefaultConfig($configPath);
+        }
+    }
+
+    private function createDefaultConfig($configPath)
+    {
+        $defaultConfig = [
+            'folder' => 'nested-routes',
+            'permissions' => [
+                'ignored_folders' => env('permissions_ignored_folders', [
+                    'auth',
+                    'client',
+                ]),
+            ],
+            'rename_main_folders' => [
+                'admin' => 'dashboard'
+            ]
+        ];
+
+        // Convert array to PHP code
+        $configContent = "<?php\n\nreturn " . var_export($defaultConfig, true) . ";\n";
+
+        // Write config content to file
+        file_put_contents($configPath, $configContent);
     }
 }
