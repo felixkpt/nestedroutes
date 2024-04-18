@@ -20,6 +20,10 @@ class NestedRoutesBindingServiceProvider extends ServiceProvider
         $this->app->register(NestedRoutesServiceProvider::class);
     }
 
+    function boot() {
+        $this->configure();
+    }
+
     public function configure()
     {
         $configPath = config_path('nestedroutes.php');
