@@ -22,22 +22,9 @@ class NestedRoutesBindingServiceProvider extends ServiceProvider
 
     function boot()
     {
-        $this->registerMiddleware();
         $this->configure();
     }
 
-    /**
-     * Register the middleware.
-     *
-     * @return void
-     */
-    protected function registerMiddleware()
-    {
-        // Register middleware using the 'middleware' method
-        $this->app['router']->middleware([
-            'nestedroutes.auth' => \Felixkpt\Nestedroutes\Http\Middleware\NestedRoutesAuthMiddleware::class,
-        ]);
-    }
 
     public function configure()
     {
