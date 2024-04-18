@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Services\NestedRoutes;
+namespace App\Services\Nestedroutes;
 
 use Illuminate\Support\Str;
 
-class GetNestedRoutes
+class GetNestedroutes
 {
     protected $prefix;
     protected $leftTrim;
 
     /**
-     * Create a new GetNestedRoutes instance.
+     * Create a new GetNestedroutes instance.
      *
      * @param string $prefix The prefix to use for nested routes (default: 'admin').
      * @param string $leftTrim The part of the URL to trim from the left (default: 'admin').

@@ -4,7 +4,7 @@ namespace Felixkpt\Nestedroutes\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
-class NestedRoutesBindingServiceProvider extends ServiceProvider
+class NestedroutesBindingServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
@@ -16,8 +16,8 @@ class NestedRoutesBindingServiceProvider extends ServiceProvider
 
         $this->configure();
 
-        $this->app->register(NestedRoutesMacroServiceProvider::class);
-        $this->app->register(NestedRoutesServiceProvider::class);
+        $this->app->register(NestedroutesMacroServiceProvider::class);
+        $this->app->register(NestedroutesServiceProvider::class);
     }
 
     function boot()

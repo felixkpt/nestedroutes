@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 
-class NestedRoutesAuthMiddleware
+class NestedroutesAuthMiddleware
 {
 
     protected $router;

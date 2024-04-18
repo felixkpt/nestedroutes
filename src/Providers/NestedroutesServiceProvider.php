@@ -2,12 +2,12 @@
 
 namespace Felixkpt\Nestedroutes\Providers;
 
-use Felixkpt\Nestedroutes\Http\Middleware\NestedRoutesAuthMiddleware;
+use Felixkpt\Nestedroutes\Http\Middleware\NestedroutesAuthMiddleware;
 use Felixkpt\Nestedroutes\Http\Middleware\TemporaryTokenValidationMiddleware;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 
-class NestedRoutesServiceProvider extends ServiceProvider
+class NestedroutesServiceProvider extends ServiceProvider
 {
 
     /**
@@ -27,7 +27,7 @@ class NestedRoutesServiceProvider extends ServiceProvider
     public function boot()
     {
         $router = $this->app->make(Router::class);
-        $router->aliasMiddleware('nestedroutes.auth', NestedRoutesAuthMiddleware::class);
+        $router->aliasMiddleware('nestedroutes.auth', NestedroutesAuthMiddleware::class);
         $router->aliasMiddleware('nestedroutes.temporary_token', TemporaryTokenValidationMiddleware::class);
 
         $driver = preg_replace('@/+@', '/', 'routes/nested-routes/driver.php');

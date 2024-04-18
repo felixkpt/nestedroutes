@@ -6,7 +6,7 @@ use Exception;
 use Illuminate\Routing\Route;
 use Illuminate\Support\ServiceProvider;
 
-class NestedRoutesMacroServiceProvider extends ServiceProvider
+class NestedroutesMacroServiceProvider extends ServiceProvider
 {
     public function register()
     {
