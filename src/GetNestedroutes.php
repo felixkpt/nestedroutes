@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Nestedroutes;
+namespace Felixkpt\Nestedroutes;
 
 use Illuminate\Support\Str;
 

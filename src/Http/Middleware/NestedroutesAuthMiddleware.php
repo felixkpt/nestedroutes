@@ -149,8 +149,6 @@ class NestedroutesAuthMiddleware
 
             $methods = [...$methods];
 
-            Log::info('Incoming vs curr', [$incoming_route, $curr_route]);
-
             // Check if the current route and method match the user's permissions...
             if ($incoming_route == $curr_route) {
                 $found_path = true;

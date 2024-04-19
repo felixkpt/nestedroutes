@@ -17,7 +17,8 @@
         }
     ],
     "require": {
-        "php": "^8.0"
+        "php": "^8.0",
+        "spatie/laravel-permission": "^5.10"
     },
     "autoload": {
         "psr-4": {
