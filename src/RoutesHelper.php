@@ -16,7 +16,7 @@ class RoutesHelper
 
     function __construct($prefix_from = null)
     {
-        
+
         $this->nested_routes_folder = config('nestedroutes.folder');
         $this->renameMainFolders = config('nestedroutes.rename_main_folders');
 
@@ -125,8 +125,12 @@ class RoutesHelper
     {
         $items = [];
         // Filter out the driver.php files and process each route file
-        $route_files = collect(File::files($folder))->filter(fn ($file) => !Str::is($file->getFileName(), 'driver.php') && Str::endsWith($file->getFileName(), '.route.php'));
-
+        $route_files = collect(File::files($folder))->filter(function ($file) {
+            $filename = $file->getFileName();
+            return !Str::is($filename, 'driver.php') &&
+                !Str::is($filename, 'auth.route.php') && // Exclude auth.route.php
+                Str::endsWith($filename, '.route.php');
+        });
 
         foreach ($route_files as $file) {
 
