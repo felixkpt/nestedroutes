@@ -19,6 +19,9 @@ class NestedroutesServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->register(NestedroutesMacroServiceProvider::class);
+
+        // Helper functions include
+        require_once __DIR__ . '/../functions.php';
     }
 
     /**
