@@ -99,11 +99,6 @@ class NestedroutesAuthMiddleware
     protected function authorize($currentRoute)
     {
 
-        Log::info('TTTT');
-        if (request()->token == 'python-by-pass') {
-            return true;
-        }
-
         // Define routes that are allowed without specific permissions...
         $allowedRoutes = [
             '/',

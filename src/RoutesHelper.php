@@ -282,13 +282,6 @@ class RoutesHelper
             $prefix = '/' . $this->prefix_from . $prefix;
         }
 
-        // if ($file_name == 'advanced-stats.route.php' || $file_name == 'betting-tips.route.php') {
-        //     Log::info("SELECTED::", [
-        //         $path,
-        //         $prefix,
-        //     ]);
-        // }
-
         return $prefix;
     }
 

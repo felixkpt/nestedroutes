@@ -15,7 +15,6 @@ if (!function_exists('checkPermission')) {
         if ($method) {
             $routePermissions = Role::find($user->default_role_id)->getAllPermissions();
 
-            Log::info($routePermissions);
             $permission = preg_replace('/\./', '/', $permission);
             $permissionCleaned = $permission == '/' ? 'admin' : preg_replace('/\/$/', '', Str::afterLast($permission, 'admin/'));
 
