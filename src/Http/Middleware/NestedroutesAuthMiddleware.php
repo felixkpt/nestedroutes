@@ -9,7 +9,6 @@ use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Log;
 
 class NestedroutesAuthMiddleware
 {

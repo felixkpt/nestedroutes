@@ -3,7 +3,6 @@
 namespace Felixkpt\Nestedroutes;
 
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
@@ -193,9 +192,9 @@ class RoutesHelper
                         'slug' => $slug,
                         'title' => $title,
                         'folder' => $folder_after_nested,
-                        'hidden' => $route->hiddenRoute(),
+                        'hidden' => $route->isHidden(),
                         'icon' => $route->getIcon(),
-                        'checked' => $route->everyoneRoute(),
+                        'checked' => $route->isAccessibleToEveryone(),
                         'filename' => $filename,
                     ];
                 });
