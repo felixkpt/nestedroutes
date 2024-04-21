@@ -195,6 +195,7 @@ class RoutesHelper
                         'hidden' => $route->isHidden(),
                         'icon' => $route->getIcon(),
                         'checked' => $route->isAccessibleToEveryone(),
+                        'is_public' => $route->isPublic(),
                         'filename' => $filename,
                     ];
                 });
