@@ -81,7 +81,7 @@ class NestedroutesServiceProvider extends ServiceProvider
 
         $auth_controller = preg_replace('@/+@', '/', $folder . '/nestedroutes.php');
         if (!file_exists($auth_controller)) {
-            $contents = file_get_contents(__DIR__ . '/../../texts/nestedroutes.tsx', 'r');
+            $contents = file_get_contents(__DIR__ . '/../../texts/nestedroutes.txt', 'r');
             File::put($auth_controller, $contents);
             chmod($auth_controller, 775);
         }
