@@ -21,7 +21,7 @@ $nested_routes_folder = config('nestedroutes.folder');
 $prefix = config('nestedroutes.prefix') ?? 'api';
 // Middlewares to be passed before accessing any route
 $middleWares = config('nestedroutes.middleWares');
-$middleWares = count($middleWares) > 0 ? $middleWares : 'api';
+$middleWares = $middleWares && count($middleWares) > 0 ? $middleWares : 'api';
 
 Route::middleware($middleWares)
     ->prefix($prefix)
