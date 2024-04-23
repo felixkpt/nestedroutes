@@ -77,34 +77,13 @@ class NestedroutesServiceProvider extends ServiceProvider
             chmod($auth_controller, 775);
         }
 
-        $configPath = config_path('nestedroutes.php');
+        $folder = config_path();
 
-        // Check if the config file already exists
-        if (!file_exists($configPath)) {
-            // If not, create it with default configuration
-            $this->createDefaultConfig($configPath);
+        $auth_controller = preg_replace('@/+@', '/', $folder . '/nestedroutes.php');
+        if (!file_exists($auth_controller)) {
+            $contents = file_get_contents(__DIR__ . '/../../texts/nestedroutes.tsx', 'r');
+            File::put($auth_controller, $contents);
+            chmod($auth_controller, 775);
         }
-    }
-
-    private function createDefaultConfig($configPath)
-    {
-        $defaultConfig = [
-            'folder' => 'nested-routes',
-            'permissions' => [
-                'ignored_folders' => env('permissions_ignored_folders', [
-                    'auth',
-                    'client',
-                ]),
-            ],
-            'rename_main_folders' => [
-                'admin' => 'dashboard'
-            ]
-        ];
-
-        // Convert array to PHP code
-        $configContent = "<?php\n\nreturn " . var_export($defaultConfig, true) . ";\n";
-
-        // Write config content to file
-        file_put_contents($configPath, $configContent);
     }
 }

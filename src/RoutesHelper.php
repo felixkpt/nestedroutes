@@ -185,6 +185,8 @@ class RoutesHelper
                     $title = implode(' ', array_map(fn ($word) => ucfirst($word), $words));
                     $title = Str::title($title);
 
+                    $checked = $route->isAccessibleToEveryone() !== false ? $route->isAccessibleToEveryone() : $route->isPublic();
+
                     return [
                         'uri' => $uri,
                         'methods' => $methods,
@@ -194,7 +196,7 @@ class RoutesHelper
                         'folder' => $folder_after_nested,
                         'hidden' => $route->isHidden(),
                         'icon' => $route->getIcon(),
-                        'checked' => $route->isAccessibleToEveryone(),
+                        'checked' => $checked,
                         'is_public' => $route->isPublic(),
                         'filename' => $filename,
                     ];

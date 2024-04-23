@@ -2,13 +2,15 @@
 
 namespace Felixkpt\Nestedroutes\Http\Middleware;
 
+use App\Models\Permission;
 use App\Models\Role;
-use App\Models\User;
 use Closure;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class NestedroutesAuthMiddleware
 {
@@ -45,19 +47,32 @@ class NestedroutesAuthMiddleware
     public function handle($request, Closure $next)
     {
 
+        // Check if the request contains a Sanctum token
+        if ($token = $request->bearerToken()) {
+            // Attempt to find the token in the personal access tokens table
+            $accessToken = PersonalAccessToken::findToken($token);
+            if ($accessToken && $accessToken->tokenable) {
+                // Token is valid, authenticate the user
+                Auth::login($accessToken->tokenable);
+            }
+        }
+
         // Set up necessary data for authorization checks...
         if ($request) {
             $this->request = $request;
             $this->user = auth()->user();
 
             // For testing purposes only enable the below user if you are accessing directly from the browser
-            $this->user = User::first();
+            if (!$this->user) {
+                // $this->user = User::first();
+            }
 
             $this->path = Route::getFacadeRoot()->current()->uri();
         }
 
         // Perform checks for authorization...
-        $this->check();
+        $this->authorize();
+
         return $next($request);
     }
 
@@ -66,37 +81,23 @@ class NestedroutesAuthMiddleware
      *
      * @return mixed
      */
-    public function check()
+    protected function authorize()
     {
 
-        $current = rtrim(request()->getPathInfo(), '/');
+        $currentRoute = rtrim(request()->getPathInfo(), '/');
         $permissions_ignored_folders = config('nested_routes.permissions.ignored_folders') ?? [];
 
-        $top_level = trim(Str::after($current, '/api'), '/');
+        $top_level = trim(Str::after($currentRoute, '/api'), '/');
         $top_level = Str::before($top_level, '/');
-        
+
         if (in_array($top_level, $permissions_ignored_folders)) {
             return true;
         }
 
         // Allow certain routes without authorization...
-        if (Str::startsWith($current, '/api/client')) {
+        if (Str::startsWith($currentRoute, '/api/client')) {
             return true;
-        } elseif ($this->user) {
-            return $this->authorize($current);
-        } else {
-            App::abort(401, "Not authorized to access this page/resource/endpoint");
         }
-    }
-
-    /**
-     * Perform authorization checks for the current user.
-     *
-     * @param  string  $current
-     * @return mixed
-     */
-    protected function authorize($currentRoute)
-    {
 
         // Define routes that are allowed without specific permissions...
         $allowedRoutes = [
@@ -104,8 +105,8 @@ class NestedroutesAuthMiddleware
             'auth/user',
             'auth/password',
             '/api/admin/settings/role-permissions/roles/get-user-roles-and-direct-permissions',
-            '/api/admin/settings/role-permissions/roles/role/{id}/get-role-menu',
-            '/api/admin/settings/role-permissions/roles/role/{id}/get-user-route-permissions',
+            '/api/admin/settings/role-permissions/roles/view/{id}/get-role-menu',
+            '/api/admin/settings/role-permissions/roles/view/{id}/get-role-route-permissions',
             '/api/admin/file-repo/*',
         ];
 
@@ -119,21 +120,47 @@ class NestedroutesAuthMiddleware
 
         if ($allowed) return true;
 
-        $user = $this->user;
+        // handling publi routes
+        $public_permissions = Permission::where('is_public', true)->pluck('uri');
+
+        [$authenticate, $found_path] = $this->findRouteAndAuthenticate($public_permissions);
+
+        if ($authenticate) return true;
+
+        if (!$this->user) {
+            App::abort(401, "Unauthenticated.");
+        }
 
         // Retrieve permissions inherited from the user's default_role_id
-        $role = Role::find($user->default_role_id);
+        $role = Role::find($this->user->default_role_id);
         if ($role) {
             $permissions = $role->permissions->pluck('uri') ?? [];
         } else {
             abort(404, 'User default role not found!');
         }
 
+        [$authenticate, $found_path] = $this->findRouteAndAuthenticate($permissions);
+
+        if ($authenticate) {
+            return true;
+        }
+
+        // If the route is found but the method is not allowed...
+        if ($found_path === true) {
+            $this->unauthorize(405);
+        }
+
+        return $this->unauthorize();
+    }
+
+    function findRouteAndAuthenticate($permissions)
+    {
         // Get the current route and request method...
         $incoming_route = Str::after(Route::getCurrentRoute()->uri, 'api/');
         $method = request()->method();
 
-        $found_path = '';
+        $found_path = false;
+        $authenticate = false;
         foreach ($permissions as $uri) {
             // Split the URI into route and methods...
             $res = preg_split('#@#', $uri, 2);
@@ -146,18 +173,15 @@ class NestedroutesAuthMiddleware
             // Check if the current route and method match the user's permissions...
             if ($incoming_route == $curr_route) {
                 $found_path = true;
+
                 if (in_array($method, $methods) || in_array('any', $methods)) {
-                    return true;
+                    $authenticate = true;
+                    continue;
                 }
             }
         }
 
-        // If the route is found but the method is not allowed...
-        if ($found_path === true) {
-            $this->unauthorize(405);
-        }
-
-        return $this->unauthorize();
+        return [$authenticate, $found_path];
     }
 
     /**
