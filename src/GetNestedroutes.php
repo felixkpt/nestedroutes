@@ -11,19 +11,10 @@ class GetNestedroutes
 
     /**
      * Create a new GetNestedroutes instance.
-     *
-     * @param string $prefix The prefix to use for nested routes (default: 'admin').
-     * @param string $leftTrim The part of the URL to trim from the left (default: 'admin').
      */
-    public function __construct($prefix = 'admin', $leftTrim = 'admin')
+    public function __construct()
     {
-        $this->prefix = null;
-        $this->leftTrim = null;
-
-        // If $leftTrim is empty, generate a random string to avoid potential issues
-        if (strlen($leftTrim) < 1) {
-            $this->leftTrim = Str::random();
-        }
+        $this->leftTrim = Str::random();
     }
 
     /**
@@ -33,7 +24,7 @@ class GetNestedroutes
      */
     public function list()
     {
-        // Get all the nested routes from the 'nested-routes/admin' folder
+        // Get all the nested routes from the 'nested-routes' folder
         $nestedRoutes = (new RoutesHelper())->getRoutes($this->leftTrim);
 
         // // Group the routes by folder hierarchy

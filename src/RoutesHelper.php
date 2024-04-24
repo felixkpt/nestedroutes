@@ -249,15 +249,6 @@ class RoutesHelper
     function getPrefix($file)
     {
 
-        // $prefix = '';
-        // if ($file->getPathname() !== $routes_path) {
-        //     $sub = Str::replace('\\', '/', dirname($file->getPathname()));
-        //     $sub = Str::afterLast($sub, $this->nested_routes_folder);
-        //     $prefix = $this->prefix_from.'/'.Str::after($sub, $this->prefix_from);
-        // }
-
-        // return $prefix;
-
         $file_name = $file->getBaseName();
 
         $path = $file->getPath();

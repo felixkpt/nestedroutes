@@ -31,10 +31,12 @@ class NestedroutesAuthMiddleware
     protected $role;
     protected $urls = [];
     protected $loopLevel = 0;
+    protected $currentRoute;
 
     public function __construct(Router $router)
     {
         $this->router = $router;
+        $this->currentRoute = trim(Str::after(Route::getCurrentRoute()->uri, config('nestedroutes.prefix')), '/') ?: '/';
     }
 
     /**
@@ -84,48 +86,36 @@ class NestedroutesAuthMiddleware
     protected function authorize()
     {
 
-        $currentRoute = rtrim(request()->getPathInfo(), '/');
-        $permissions_ignored_folders = config('nested_routes.permissions.ignored_folders') ?? [];
-
-        $top_level = trim(Str::after($currentRoute, '/api'), '/');
-        $top_level = Str::before($top_level, '/');
-
-        if (in_array($top_level, $permissions_ignored_folders)) {
-            return true;
-        }
-
-        // Allow certain routes without authorization...
-        if (Str::startsWith($currentRoute, '/api/client')) {
-            return true;
-        }
-
         // Define routes that are allowed without specific permissions...
         $allowedRoutes = [
-            '/',
-            'auth/user',
-            'auth/password',
-            '/api/admin/settings/role-permissions/roles/get-user-roles-and-direct-permissions',
-            '/api/admin/settings/role-permissions/roles/view/{id}/get-role-menu',
-            '/api/admin/settings/role-permissions/roles/view/{id}/get-role-route-permissions',
-            '/api/admin/file-repo/*',
+            'admin/settings/role-permissions/roles/get-user-roles-and-direct-permissions',
+            'admin/settings/role-permissions/roles/view/{id}/get-role-menu',
+            'admin/settings/role-permissions/roles/view/{id}/get-role-route-permissions',
+            'admin/file-repo/*',
         ];
 
         // Check if the current route matches any of the allowed routes
-        $allowed = collect($allowedRoutes)->contains(function ($allowedRoute) use ($currentRoute) {
+        $allowed = collect($allowedRoutes)->contains(function ($allowedRoute) {
 
-            if (Str::endsWith($allowedRoute, '*') && Str::startsWith($currentRoute, Str::replaceLast('*', '', $allowedRoute))) return true;
+            if (Str::endsWith($allowedRoute, '*') && Str::startsWith($this->currentRoute, Str::replaceLast('*', '', $allowedRoute))) return true;
 
-            return preg_match("#^" . str_replace(['/', '{id}'], ['\/', '\d+'], $allowedRoute) . "$#", $currentRoute);
+            return $allowedRoute == $this->currentRoute;
         });
 
         if ($allowed) return true;
 
-        // handling publi routes
-        $public_permissions = Permission::where('is_public', true)->pluck('uri');
-
-        [$authenticate, $found_path] = $this->findRouteAndAuthenticate($public_permissions);
-
+        // handling public routes
+        $permissions = Permission::where('is_public', true)->pluck('uri');
+        [$authenticate, $found_path] = $this->findRouteAndAuthenticate($permissions);
         if ($authenticate) return true;
+
+        // handling guest routes
+        $guestRole = Role::find(config('nestedroutes.guestRoleId') ?? 0);
+        if ($guestRole) {
+            $permissions = $guestRole->permissions->pluck('uri');
+            [$authenticate, $found_path] = $this->findRouteAndAuthenticate($permissions);
+            if ($authenticate) return true;
+        }
 
         if (!$this->user) {
             App::abort(401, "Unauthenticated.");
@@ -156,7 +146,7 @@ class NestedroutesAuthMiddleware
     function findRouteAndAuthenticate($permissions)
     {
         // Get the current route and request method...
-        $incoming_route = Str::after(Route::getCurrentRoute()->uri, 'api/');
+        $incoming_route = $this->currentRoute;
         $method = request()->method();
 
         $found_path = false;

@@ -22,6 +22,7 @@ return [
 
     'rename_main_folders' => [
         'admin' => 'dashboard'
-    ]
+    ],
+    'guestRoleId' => 1101,
 
 ];

@@ -12,10 +12,10 @@ if (!function_exists('checkPermission')) {
         $user = User::find(auth()->id());
 
         if ($method) {
-            $routePermissions = Role::find($user->default_role_id)->getAllPermissions();
+            $roleId = $user->default_role_id ?? (config('nestedroutes.guestRoleId') ?? 0);
+            $routePermissions = Role::find($roleId)->getAllPermissions();
 
-            $permission = preg_replace('/\./', '/', $permission);
-            $permissionCleaned = $permission == '/' ? 'admin' : preg_replace('/\/$/', '', Str::afterLast($permission, 'admin/'));
+            $permissionCleaned = trim(preg_replace('/\./', '/', $permission), '/');
 
             $httpMethod = Str::upper($method);
             $found = !!collect($routePermissions)->contains(function ($route) use ($permissionCleaned, $httpMethod) {
@@ -24,7 +24,6 @@ if (!function_exists('checkPermission')) {
             });
 
             return $found;
-            
         } else {
             return $user->can($permission);
         }

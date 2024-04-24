@@ -31,6 +31,7 @@ class NestedroutesServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+
         $router = $this->app->make(Router::class);
         $router->aliasMiddleware('nestedroutes.auth', NestedroutesAuthMiddleware::class);
         $router->aliasMiddleware('nestedroutes.temporary_token', TemporaryTokenValidationMiddleware::class);
