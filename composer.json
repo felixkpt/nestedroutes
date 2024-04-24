@@ -16,10 +16,6 @@
             "email": "felixkpt@gmail.com"
         }
     ],
-    "require": {
-        "php": "^8.0",
-        "spatie/laravel-permission": "^5.10"
-    },
     "autoload": {
         "psr-4": {
             "Felixkpt\\Nestedroutes\\": "src/"
