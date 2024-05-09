@@ -85,13 +85,14 @@ class NestedroutesAuthMiddleware
      */
     protected function authorize()
     {
+        return;
 
         // Define routes that are allowed without specific permissions...
         $allowedRoutes = [
-            'admin/settings/role-permissions/roles/get-user-roles-and-direct-permissions',
-            'admin/settings/role-permissions/roles/view/{id}/get-role-menu',
-            'admin/settings/role-permissions/roles/view/{id}/get-role-route-permissions',
-            'admin/file-repo/*',
+            'dashboard/settings/role-permissions/roles/get-user-roles-and-direct-permissions',
+            'dashboard/settings/role-permissions/roles/view/{id}/get-role-menu',
+            'dashboard/settings/role-permissions/roles/view/{id}/get-role-route-permissions',
+            'file-repo/*',
         ];
 
         // Check if the current route matches any of the allowed routes

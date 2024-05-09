@@ -17,14 +17,12 @@
         }
     ],
     "require": {
-        "php": ">=8.0",
-        "spatie/laravel-permission": "*",
-        "laravel/sanctum": "*"
+        "php": "^8.0",
+        "spatie/laravel-permission": "^5.10"
     },
     "autoload": {
         "psr-4": {
             "Felixkpt\\Nestedroutes\\": "src/"
         }
-    },
-    "minimum-stability": "stable"
+    }
 }
