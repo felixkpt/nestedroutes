@@ -2,6 +2,7 @@
 
 namespace Felixkpt\Nestedroutes\Providers;
 
+use Felixkpt\Nestedroutes\Console\Commands\PublishMigrationFilesCommand;
 use Felixkpt\Nestedroutes\Http\Middleware\NestedroutesAuthMiddleware;
 use Felixkpt\Nestedroutes\Http\Middleware\TemporaryTokenValidationMiddleware;
 use Illuminate\Routing\Router;
@@ -22,6 +23,11 @@ class NestedroutesServiceProvider extends ServiceProvider
 
         // Helper functions include
         require_once __DIR__ . '/../functions.php';
+
+        // Register custom command
+        $this->commands([
+            PublishMigrationFilesCommand::class,
+        ]);
     }
 
     /**
