@@ -54,6 +54,20 @@ class NestedroutesMacroServiceProvider extends ServiceProvider
             }
         });
 
+        // position macro
+        Route::macro('position', function ($value = 1) {
+            $this->position = $value;
+            return $this;
+        });
+
+        Route::macro('getPosition', function () {
+            try {
+                return $this->position ?? 1;
+            } catch (Exception $e) {
+                return 1;
+            }
+        });
+
 
         // icon macro
         Route::macro('icon', function ($value = true) {

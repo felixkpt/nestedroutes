@@ -23,6 +23,11 @@ return [
     'rename_main_folders' => [
         'admin' => 'dashboard',
     ],
-    'guestRoleId' => 1101,
-
+    'guestRoleId' => 2,
+    'defaultPublicRoutes' => [
+        'dashboard/settings/role-permissions/roles/get-user-roles-and-direct-permissions',
+        'dashboard/settings/role-permissions/roles/view/{id}/get-role-menu',
+        'dashboard/settings/role-permissions/roles/view/{id}/get-role-route-permissions',
+        'file-repo/*',
+    ]
 ];
