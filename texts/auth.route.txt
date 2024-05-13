@@ -1,28 +1,44 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Dashboard\Settings\RolePermissions\Roles\RolesController;
+use App\Http\Controllers\Dashboard\Settings\RolePermissions\Roles\View\RoleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('api/auth')->group(function () {
 
-    Route::post('login', [AuthController::class, 'login']);
-    Route::post('register', [AuthController::class, 'register']);
-    Route::post('password', [AuthController::class, 'passwordResetLink']);
+    $controller = AuthController::class;
 
-    Route::get('password/{token}', [AuthController::class, 'getEmail'])->name('getEmail');
-    Route::post('password-set', [AuthController::class, 'passwordSet'])->name('password.set');
+    Route::post('login', [$controller, 'login']);
+    Route::post('register', [$controller, 'register']);
+    Route::post('password', [$controller, 'passwordResetLink']);
 
-    Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('password/{token}', [$controller, 'getEmail'])->name('getEmail');
+    Route::post('password-set', [$controller, 'passwordSet'])->name('password.set');
+
+    Route::middleware(['auth:sanctum'])->group(function () use ($controller) {
 
         Route::get('/user', function (Request $request) {
             $user = $request->user();
             $roles = $user->getRoleNames();
             $user->roles = $roles;
+            $user->fileAccessToken = generateTemporaryToken(60);
             return ['results' => $user];
         });
 
-        Route::post('logout', [AuthController::class, 'logout']);
-        Route::post('abilities', [AuthController::class, 'abilities']);
+        Route::post('update', [$controller, 'userProfile'])->everyone(true);
+        Route::get('profile', [$controller, 'profileShow'])->hidden(true)->everyone(true);
+        Route::patch('profile', [$controller, 'profileUpdate'])->hidden(true)->everyone(true);
+        Route::patch('update-password', [$controller, 'updatePassword'])->hidden(true)->everyone(true);
+
+        Route::post('logout', [$controller, 'logout']);
     });
+
+    $controller = RolesController::class;
+    Route::get('/role-permissions/roles/get-user-roles-and-direct-permissions', [$controller, 'getUserRolesAndDirectPermissions'])->everyone(true)->hidden(true);
+
+    $controller = RoleController::class;
+    Route::get('/role-permissions/roles/view/{id}/get-role-menu', [$controller, 'getRoleMenu'])->public(true)->hidden();
+    Route::get('/role-permissions/roles/view/{id}/get-role-route-permissions', [$controller, 'getRoleRoutePermissions'])->everyone(true)->hidden();
 });
