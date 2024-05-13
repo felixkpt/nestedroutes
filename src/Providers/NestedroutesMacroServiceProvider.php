@@ -68,7 +68,6 @@ class NestedroutesMacroServiceProvider extends ServiceProvider
             }
         });
 
-
         // icon macro
         Route::macro('icon', function ($value = true) {
             $this->icon = $value;
