@@ -9,7 +9,6 @@ use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\PersonalAccessToken;
 
 class NestedroutesAuthMiddleware
@@ -49,15 +48,7 @@ class NestedroutesAuthMiddleware
     public function handle($request, Closure $next)
     {
 
-        // Check if the request contains a Sanctum token
-        if ($token = $request->bearerToken()) {
-            // Attempt to find the token in the personal access tokens table
-            $accessToken = PersonalAccessToken::findToken($token);
-            if ($accessToken && $accessToken->tokenable) {
-                // Token is valid, authenticate the user
-                Auth::login($accessToken->tokenable);
-            }
-        }
+        sanctum_auth();
 
         // Set up necessary data for authorization checks...
         if ($request) {
@@ -88,12 +79,7 @@ class NestedroutesAuthMiddleware
         return;
 
         // Define routes that are allowed without specific permissions...
-        $allowedRoutes = [
-            'dashboard/settings/role-permissions/roles/get-user-roles-and-direct-permissions',
-            'dashboard/settings/role-permissions/roles/view/{id}/get-role-menu',
-            'dashboard/settings/role-permissions/roles/view/{id}/get-role-route-permissions',
-            'file-repo/*',
-        ];
+        $allowedRoutes = config('nestedroutes.defaultPublicRoutes');
 
         // Check if the current route matches any of the allowed routes
         $allowed = collect($allowedRoutes)->contains(function ($allowedRoute) {
