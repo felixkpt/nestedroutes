@@ -48,43 +48,55 @@ class NestedroutesServiceProvider extends ServiceProvider
 
     public function configureDefaults()
     {
+        $this->ensureNestedRoutesDirectoryExists();
+        $this->createDefaultRouteFiles();
+        $this->createDefaultAuthController();
+        $this->createDefaultConfigFile();
+        $this->createDefaultModels();
+    }
 
+    private function ensureNestedRoutesDirectoryExists()
+    {
         $folder = base_path(preg_replace('@/+@', '/', 'routes/nested-routes/'));
         File::ensureDirectoryExists($folder);
+    }
 
-        $driver = preg_replace('@/+@', '/', $folder . '/driver.php');
+    private function createDefaultRouteFiles()
+    {
+        $this->createDefaultFile('driver.php', 'driver.txt', '/../../texts/');
+        $this->createDefaultFile('auth.route.php', 'auth.route.txt', '/../../texts/');
+    }
 
-        if (!file_exists($driver)) {
-            $contents = file_get_contents(__DIR__ . '/../../texts/driver.txt', 'r');
-            File::put($driver, $contents);
-            chmod($driver, 775);
-        }
-
-        $auth = preg_replace('@/+@', '/', $folder . '/auth.route.php');
-        if (!file_exists($auth)) {
-            $contents = file_get_contents(__DIR__ . '/../../texts/auth.route.txt', 'r');
-            File::put($auth, $contents);
-            chmod($auth, 775);
-        }
-
-
+    private function createDefaultAuthController()
+    {
         $folder = base_path(preg_replace('@/+@', '/', 'app/Http/Controllers/Auth'));
         File::ensureDirectoryExists($folder);
+        $this->createDefaultFile('AuthController.php', 'Auth/AuthController.txt', '/../../texts/');
+    }
 
-        $auth_controller = preg_replace('@/+@', '/', $folder . '/AuthController.php');
-        if (!file_exists($auth_controller)) {
-            $contents = file_get_contents(__DIR__ . '/../../texts/Auth/AuthController.txt', 'r');
-            File::put($auth_controller, $contents);
-            chmod($auth_controller, 775);
-        }
-
+    private function createDefaultConfigFile()
+    {
         $folder = config_path();
+        $this->createDefaultFile('nestedroutes.php', 'nestedroutes.txt', '/../../texts/');
+    }
 
-        $auth_controller = preg_replace('@/+@', '/', $folder . '/nestedroutes.php');
-        if (!file_exists($auth_controller)) {
-            $contents = file_get_contents(__DIR__ . '/../../texts/nestedroutes.txt', 'r');
-            File::put($auth_controller, $contents);
-            chmod($auth_controller, 775);
+    private function createDefaultFile($fileName, $templateFile, $templatePath)
+    {
+        $filePath = preg_replace('@/+@', '/', base_path("routes/nested-routes/$fileName"));
+        if (!file_exists($filePath)) {
+            $contents = file_get_contents(__DIR__ . "$templatePath$templateFile", 'r');
+            File::put($filePath, $contents);
+            chmod($filePath, 775);
+        }
+    }
+
+    private function createDefaultModels()
+    {
+        $packageModelsPath = __DIR__ . '/../../Models';
+        $appModelsPath = app_path('Models');
+
+        if (File::isDirectory($packageModelsPath)) {
+            File::copyDirectory($packageModelsPath, $appModelsPath);
         }
     }
 }
