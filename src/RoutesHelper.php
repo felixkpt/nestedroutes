@@ -3,6 +3,7 @@
 namespace Felixkpt\Nestedroutes;
 
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
@@ -37,6 +38,11 @@ class RoutesHelper
 
             $folder = $routes_path;
             $routes = $this->getRoutesReal($folder, $routes_path, $leftTrim);
+
+            // Sort the items array based on position
+            usort($routes, function ($a, $b) {
+                return $a['position'] - $b['position'];
+            });
 
             $foldermain = $this->getFolderAfterNested($folder);
 
@@ -159,7 +165,7 @@ class RoutesHelper
                     $uri = $route->uri;
 
                     $methods = '@' . implode('|@', $route->methods());
-                    $uri_methods = $uri . $methods;
+                    $uri_and_methods = $uri . $methods;
 
                     $slug = Str::slug(Str::replace('/', '.', $uri), '.');
 
@@ -187,10 +193,15 @@ class RoutesHelper
 
                     $checked = $route->isAccessibleToEveryone() !== false ? $route->isAccessibleToEveryone() : $route->isPublic();
 
+                    
+                    $name = Str::slug(Str::replace('/', ' ', $uri_and_methods), '.');
+                 
+                    Log::info("SLU: ", [$name]);
+
                     return [
                         'uri' => $uri,
                         'methods' => $methods,
-                        'uri_methods' => $uri_methods,
+                        'uri_and_methods' => $uri_and_methods,
                         'slug' => $slug,
                         'title' => $title,
                         'folder' => $folder_after_nested,
@@ -199,6 +210,7 @@ class RoutesHelper
                         'checked' => $checked,
                         'is_public' => $route->isPublic(),
                         'filename' => $filename,
+                        'position' => $this->getPosition($name),
                     ];
                 });
 
