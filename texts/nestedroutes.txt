@@ -23,9 +23,7 @@ return [
     'rename_root_folders' => [
         'admin' => 'dashboard',
     ],
-    'expanded_root_folders' => [
-        'dashboard',
-    ],
+    'expanded_root_folders' => [],
     'guestRoleId' => 1101,
 
     'defaultPublicRoutes' => [
