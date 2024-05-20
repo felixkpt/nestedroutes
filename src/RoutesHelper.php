@@ -18,7 +18,7 @@ class RoutesHelper
     {
 
         $this->nested_routes_folder = config('nestedroutes.folder');
-        $this->renameMainFolders = config('nestedroutes.rename_main_folders');
+        $this->renameMainFolders = config('nestedroutes.rename_root_folders');
 
         $this->prefix_from = trim($prefix_from ? $prefix_from : '', '/');
     }
@@ -134,7 +134,7 @@ class RoutesHelper
             $filename = $file->getFileName();
             return !Str::is($filename, 'driver.php') &&
                 !Str::is($filename, 'auth.route.php') && // Exclude auth.route.php
-                Str::endsWith($filename, '.route.php');
+                Str::endsWith($filename, '.php');
         });
 
         foreach ($route_files as $file) {
@@ -156,6 +156,7 @@ class RoutesHelper
                 require $file_path;
 
                 $filename = Str::title(Str::before(basename($file_path), '.route.php'));
+                $filename = Str::before($filename, '.php');
 
                 // Get the newly added routes and their corresponding folders
                 $routes = collect(Route::getRoutes())->filter(function ($route) use ($existingRoutes) {
@@ -196,7 +197,6 @@ class RoutesHelper
                     
                     $name = Str::slug(Str::replace('/', ' ', $uri_and_methods), '.');
                  
-                    Log::info("SLU: ", [$name]);
 
                     return [
                         'uri' => $uri,
@@ -271,6 +271,7 @@ class RoutesHelper
         $replaced_filename = Str::replace('index.route.php', '', $file_name);
 
         $replaced_filename = Str::replace('.route.php', '', $replaced_filename);
+        $replaced_filename = Str::replace('.php', '', $replaced_filename);
 
         $file_name = $replaced_filename;
         if (Str::endsWith($prefix, $replaced_filename)) {
@@ -287,7 +288,7 @@ class RoutesHelper
             $prefix = '/' . $this->prefix_from . $prefix;
         }
 
-        return $prefix;
+        return preg_replace('#/+#', '/', $prefix);
     }
 
     /**

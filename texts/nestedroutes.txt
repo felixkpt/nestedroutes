@@ -20,9 +20,18 @@ return [
         ]),
     ],
 
-    'rename_main_folders' => [
-        'admin' => 'dashboard'
+    'rename_root_folders' => [
+        'admin' => 'dashboard',
+    ],
+    'expanded_root_folders' => [
+        'dashboard',
     ],
     'guestRoleId' => 1101,
 
+    'defaultPublicRoutes' => [
+        'auth/role-permissions/roles/get-user-roles-and-direct-permissions',
+        'auth/role-permissions/roles/view/{id}/get-role-menu',
+        'auth/role-permissions/roles/view/{id}/get-role-route-permissions',
+        'file-repo/*',
+    ]
 ];
