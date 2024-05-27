@@ -11,6 +11,7 @@ if (!function_exists('checkPermission')) {
     {
 
         $user = User::find(auth()->id());
+        if (!$user) return false;
 
         if ($method) {
             $roleId = $user->default_role_id ?? (config('nestedroutes.guestRoleId') ?? 0);
