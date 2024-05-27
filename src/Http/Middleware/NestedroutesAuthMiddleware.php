@@ -76,7 +76,6 @@ class NestedroutesAuthMiddleware
      */
     protected function authorize()
     {
-        return;
 
         // Define routes that are allowed without specific permissions...
         $allowedRoutes = config('nestedroutes.defaultPublicRoutes');
