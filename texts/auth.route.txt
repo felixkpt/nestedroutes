@@ -21,24 +21,21 @@ Route::prefix('api/auth')->group(function () {
 
         Route::get('/user', function (Request $request) {
             $user = $request->user();
-            $roles = $user->getRoleNames();
-            $user->roles = $roles;
             $user->fileAccessToken = generateTemporaryToken(60);
             return ['results' => $user];
         });
 
-        Route::post('update', [$controller, 'userProfile'])->everyone(true);
-        Route::get('profile', [$controller, 'profileShow'])->hidden(true)->everyone(true);
         Route::patch('profile', [$controller, 'profileUpdate'])->hidden(true)->everyone(true);
         Route::patch('update-password', [$controller, 'updatePassword'])->hidden(true)->everyone(true);
-
+        Route::get('login-logs', [$controller, 'loginLogs'])->hidden(true)->everyone(true);
         Route::post('logout', [$controller, 'logout']);
     });
 
     $controller = RolesController::class;
-    Route::get('/role-permissions/roles/get-user-roles-and-direct-permissions', [$controller, 'getUserRolesAndDirectPermissions'])->everyone(true)->hidden(true);
+    Route::get('/role-permissions/roles/get-user-roles-and-permissions', [$controller, 'getUserRolesAndPermissions'])->public(true)->hidden(true);
+    Route::get('/role-permissions/get-user-roles', [$controller, 'getUserRoles'])->everyone(true)->hidden();
 
     $controller = RoleController::class;
+    Route::get('/role-permissions/roles/view/{id}/get-role-route-permissions', [$controller, 'getRoleRoutePermissions'])->public(true)->hidden();
     Route::get('/role-permissions/roles/view/{id}/get-role-menu', [$controller, 'getRoleMenu'])->public(true)->hidden();
-    Route::get('/role-permissions/roles/view/{id}/get-role-route-permissions', [$controller, 'getRoleRoutePermissions'])->everyone(true)->hidden();
 });
