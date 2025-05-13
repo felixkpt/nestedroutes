@@ -169,14 +169,12 @@ class NestedroutesServiceProvider extends ServiceProvider
 
     protected function publishFiles($folder, $tag, $timestamp = false)
     {
-        if (!File::isDirectory($folder)) {
-            return;
-        }
-
         $filesArray = [];
-        foreach (File::files($folder) as $file) {
+
+        $src = $folder;
+        foreach (File::files($src) as $file) {
             $fileName = $file->getFilename();
-            $fileWithPath = $folder . '/' . $fileName;
+            $fileWithPath = $src . '/' . $fileName;
             $destination = base_path($folder . '/' . ($timestamp ? Carbon::now()->addSeconds(10)->format('Y_m_d_His') . '_' . $fileName : $fileName));
             $existingFile = $this->fileExistsEndingWith($fileName);
             $filesArray[$fileWithPath] = $existingFile ?? $destination;

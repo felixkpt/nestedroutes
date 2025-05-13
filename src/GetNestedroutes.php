@@ -38,7 +38,7 @@ class GetNestedroutes
         $groupedRoutes = [];
 
         foreach ($routes as $route) {
-            $folderParts = explode('/', $route['folder']);
+            $folderParts = preg_split('/[\/\\\\]/', $route['folder']);
             $currentGroup = &$groupedRoutes;
 
             foreach ($folderParts as $folderPart) {
