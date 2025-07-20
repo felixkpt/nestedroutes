@@ -1,5 +1,6 @@
 {
     "name": "felixkpt/nestedroutes",
+    "version": "1.0.1",
     "description": "A package for handling nested routes in PHP applications. This package provides a flexible and intuitive way to define and manage nested routes, with support for role-based permissions.",
     "type": "library",
     "keywords": [
@@ -24,5 +25,13 @@
         "psr-4": {
             "Felixkpt\\Nestedroutes\\": "src/"
         }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Felixkpt\\Nestedroutes\\Providers\\NestedroutesServiceProvider"
+            ]
+        }
     }
+    
 }
